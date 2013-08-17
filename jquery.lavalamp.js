@@ -1,8 +1,9 @@
 /**
- * jquery.LavaLamp v1.4 - light up your menus with fluid, jQuery powered animations.
+ * jquery.LavaLamp v1.4.1 - light up your menus with fluid, jQuery powered animations or CSS transitions
  *
  * Requires jQuery v1.2.3 or better from http://jquery.com
- * Tested on jQuery 1.4.4, 1.3.2 and 1.2.6
+ * Requires jQuery v1.4 or better for jQuery Transit CSS transitions
+ * Tested on jQuery 1.9.1, 1.4.4, 1.3.2 and 1.2.6
  *
  * http://nixbox.com/projects/jquery-lavalamp/
  *
@@ -13,6 +14,8 @@
  * http://www.gnu.org/licenses/gpl.html
  *
  * credits to Guillermo Rauch and Ganeshji Marwaha (gmarwaha.com) for previous editions
+ * and Joe Meeks (https://github.com/JoeMeeks) for mobile touch events
+ * and Rico Sta Cruz (http://ricostacruz.com/jquery.transit) for CSS transitions via jQuery Transit
  *
  * Version: 1.0 - adapted for jQuery 1.2.x series
  * Version: 1.1 - added linum parameter
@@ -106,6 +109,10 @@
  *							 many people who identified the noLava bug
  *
  *
+ * Version: 1.4.1 - new options:
+ *		                  enhanced: added touchstart to 'mouseenter' event handler binding for touch devices
+ *		                  enhanced: support for jquery transit CSS animations
+ * 
  * Examples and usage:
  *
  * The HTML markup used to build the menu can be as simple as...
@@ -412,7 +419,7 @@ jQuery.fn.lavaLamp = function(o) {
 		$selected = $($selected.eq(0).addClass(o.selectClass));
 			
 		// add mouseover event for every sub element
-		$lt.bind('mouseenter focusin', function() {
+		$lt.bind('mouseenter focusin touchstart', function() {
 			//console.log('mouseenter');
 			// help backLava behave if returnDelay is set
 			if(delayTimer) {clearTimeout(delayTimer);delayTimer=null;}
@@ -489,13 +496,26 @@ jQuery.fn.lavaLamp = function(o) {
 				'height': $el.outerHeight()-by
 			};
 			
-			$back.stop().animate(dims, o.speed, o.fx, function () {
-				if (cbType == 'return') {
-					o.returnFinish($el);
-				} else {
-					o.hoverFinish($el);
-				}
-			});
+	                if ($.transit) {
+	                    //use css3 animations to offload rendering to gpu if transit library is available
+	                    //https://github.com/rstacruz/jquery.transit
+	                    $back.stop().transition(dims, o.speed, o.fx, function () {
+	                        if (cbType == 'return') {
+	                            o.returnFinish($el);
+	                        } else {
+	                            o.hoverFinish($el);
+	                        }
+	                    });
+	                } else {
+	                    //use normal jquery animations
+	                    $back.stop().animate(dims, o.speed, o.fx, function () {
+	                        if (cbType == 'return') {
+	                            o.returnFinish($el);
+	                        } else {
+	                            o.hoverFinish($el);
+	                        }
+	                    });
+	                }
 		};
 	});
 	
