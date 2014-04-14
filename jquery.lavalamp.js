@@ -7,6 +7,7 @@
  *
  * http://nixbox.com/projects/jquery-lavalamp/
  *
+ * Copyright (c) 2014 AvanOsch, www.crystalcopy.nl
  * Copyright (c) 2008, 2009, 2010, 2012 Jolyon Terwilliger, jolyon@nixbox.com
  * Source code Copyright (c) 2008, 2009, 2010, 2012
  * Dual licensed under the MIT and GPL licenses:
@@ -16,6 +17,7 @@
  * credits to Guillermo Rauch and Ganeshji Marwaha (gmarwaha.com) for previous editions
  * and Joe Meeks (https://github.com/JoeMeeks) for mobile touch events
  * and Rico Sta Cruz (http://ricostacruz.com/jquery.transit) for CSS transitions via jQuery Transit
+ * and Albert van Osch (www.avanosch.nl) for nested lists fix (hoverTarget)
  *
  * Version: 1.0 - adapted for jQuery 1.2.x series
  * Version: 1.1 - added linum parameter
