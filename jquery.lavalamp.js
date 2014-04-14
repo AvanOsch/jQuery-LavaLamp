@@ -113,6 +113,21 @@
  *		                  enhanced: added touchstart to 'mouseenter' event handler binding for touch devices
  *		                  enhanced: support for jquery transit CSS animations
  * 
+ * 
+ * Version: 1.4.2 - new option:
+ * 				hoverTarget - element to trigger hover (default: "a")
+ *
+ *				Fixes issues with nested lists:
+ *				<ul>
+ *				  <li><a>Parent</a>
+ *				    <ul>
+ *				      <li><a>Child</a></li>
+ *				    </ul>
+ *				  </li>
+ *				</ul>
+ *				hoverTarget has to be inside the "target" element!
+ *				set hoverTarget: false or hoverTartget: '' to disable.
+ *
  * Examples and usage:
  *
  * The HTML markup used to build the menu can be as simple as...
@@ -323,31 +338,31 @@
 (function($) {
 jQuery.fn.lavaLamp = function(o) {
 	o = $.extend({
-				'target': 'li',
-				'container': '',
-				'fx': 'swing',
-				'speed': 500, 
-				'click': function(){return true}, 
-				'startItem': '',
-				'includeMargins': false,
-				'autoReturn': true,
-				'returnDelay': 0,
-				'setOnClick': true,
-				'homeTop':0,
-				'homeLeft':0,
-				'homeWidth':0,
-				'homeHeight':0,
-				'returnHome':false,
-				'autoResize':false,
-                'selectClass': 'selectedLava',
-				'homeClass': 'homeLava',
-				'skipClass': 'noLava',
-				'returnStart': function(){},
-				'returnFinish': function(){},
-				'hoverStart': function(){},
-				'hoverFinish': function(){}
-				}, 
-			o || {});
+		'target': 'li',
+		'hoverTarget': 'a',
+		'container': '',
+		'fx': 'swing',
+		'speed': 500, 
+		'click': function(){ return true; }, 
+		'startItem': '',
+		'includeMargins': false,
+		'autoReturn': true,
+		'returnDelay': 0,
+		'setOnClick': true,
+		'homeTop':0,
+		'homeLeft':0,
+		'homeWidth':0,
+		'homeHeight':0,
+		'returnHome':false,
+		'autoResize':false,
+		'selectClass': 'selectedLava',
+		'homeClass': 'homeLava',
+		'skipClass': 'noLava',
+		'returnStart': function(){},
+		'returnFinish': function(){},
+		'hoverStart': function(){},
+		'hoverFinish': function(){}
+	}, o || {});
 
 	// parseInt for easy mathing
 	function getInt(arg) {
@@ -418,6 +433,10 @@ jQuery.fn.lavaLamp = function(o) {
 		// make sure we only have one element as $selected and apply selectedClass
 		$selected = $($selected.eq(0).addClass(o.selectClass));
 			
+		// Set the elements hoverTarget
+		if (o.hoverTarget && o.hoverTarget !== '')
+			$lt = $(o.target + ' > ' + o.hoverTarget, this).not('.' + o.skipClass);
+
 		// add mouseover event for every sub element
 		$lt.bind('mouseenter focusin touchstart', function() {
 			//console.log('mouseenter');
@@ -476,7 +495,10 @@ jQuery.fn.lavaLamp = function(o) {
 		});
 
 		function move($el, cbType) {
-			
+			// hoverTarget: Set move target to original target
+			if (o.hoverTarget && o.hoverTarget !== '' && $el.is(o.hoverTarget))
+				$el = $el.closest(o.target);
+
 			if (cbType == 'return') {
 				o.returnStart($el);
 			} else {
@@ -495,29 +517,28 @@ jQuery.fn.lavaLamp = function(o) {
 				'width': $el.outerWidth()-bx,
 				'height': $el.outerHeight()-by
 			};
-			
-	                if ($.transit) {
-	                    //use css3 animations to offload rendering to gpu if transit library is available
-	                    //https://github.com/rstacruz/jquery.transit
-	                    $back.stop().transition(dims, o.speed, o.fx, function () {
-	                        if (cbType == 'return') {
-	                            o.returnFinish($el);
-	                        } else {
-	                            o.hoverFinish($el);
-	                        }
-	                    });
-	                } else {
-	                    //use normal jquery animations
-	                    $back.stop().animate(dims, o.speed, o.fx, function () {
-	                        if (cbType == 'return') {
-	                            o.returnFinish($el);
-	                        } else {
-	                            o.hoverFinish($el);
-	                        }
-	                    });
-	                }
+
+			if ($.transit) {
+				//use css3 animations to offload rendering to gpu if transit library is available
+				//https://github.com/rstacruz/jquery.transit
+				$back.stop().transition(dims, o.speed, o.fx, function () {
+					if (cbType == 'return') {
+						o.returnFinish($el);
+					} else {
+						o.hoverFinish($el);
+					}
+				});
+			} else {
+				//use normal jquery animations
+				$back.stop().animate(dims, o.speed, o.fx, function () {
+					if (cbType == 'return') {
+						o.returnFinish($el);
+					} else {
+						o.hoverFinish($el);
+					}
+				});
+			}
 		};
 	});
-	
 };
 })(jQuery);
