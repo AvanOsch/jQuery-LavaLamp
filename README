@@ -1,6 +1,29 @@
 Awesome animated hover effects powered by jQuery (jquery.com) for your website menus.
 
-Version: 1.4 
+Version: 1.4.2
+
+	new option:	hoverTarget - element to trigger hover (default: "a")
+
+			Fixes issues with nested lists:
+			<ul>
+			  <li><a>Parent</a>
+			    <ul>
+			      <li><a>Child</a></li>
+			    </ul>
+			  </li>
+			</ul>
+			hoverTarget has to be inside the "target" element!
+			set hoverTarget: false or hoverTartget: '' to disable.
+
+
+Version: 1.4.1
+
+ 	enhanced:	added touchstart to 'mouseenter' event handler binding for touch devices
+ 	enhanced:	support for jquery transit CSS animations
+ 	fixed:		outerWidth() for jQuery >= 1.8.1
+ 
+ 
+Version: 1.4
 
 	new options:
 		hoverStart, hoverFinish, returnStart, returnFinish - callbacks for different stages
