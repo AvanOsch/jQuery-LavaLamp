@@ -436,8 +436,12 @@ jQuery.fn.lavaLamp = function(o) {
 		$selected = $($selected.eq(0).addClass(o.selectClass));
 			
 		// Set the elements hoverTarget
-		if (o.hoverTarget && o.hoverTarget !== '')
-			$lt = $(o.target + ' > ' + o.hoverTarget, this).not('.' + o.skipClass);
+		var hlt = false;
+		if (o.hoverTarget && o.hoverTarget !== '') {
+			hlt = $(o.target + ' > ' + o.hoverTarget, this).not('.' + o.skipClass);
+			if (hlt.length > 0) $lt = hlt;
+			else hlt = false;
+		}
 
 		// add mouseover event for every sub element
 		$lt.bind('mouseenter focusin touchstart', function() {
@@ -498,8 +502,7 @@ jQuery.fn.lavaLamp = function(o) {
 
 		function move($el, cbType) {
 			// hoverTarget: Set move target to original target
-			if (o.hoverTarget && o.hoverTarget !== '' && $el.is(o.hoverTarget))
-				$el = $el.closest(o.target);
+			if (hlt && $el) $el = $el.closest(o.target);
 
 			if (cbType == 'return') {
 				o.returnStart($el);
